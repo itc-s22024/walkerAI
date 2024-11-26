@@ -25,8 +25,8 @@ public class WalkerAgent : Agent
     private Vector3 initialBodyPosition; // 初期位置保存用
     private Quaternion initialBodyRotation; // 初期回転保存用
 
-    private Vector3 initaialHipsPosition;
-    private Quaternion initaialHiosRotation;
+    private Vector3 initialHipsPosition;
+    private Quaternion initialHipsRotation;
 
     private Vector3[] initialCenterPositions;
     private Quaternion[] initialCenterRotations;
@@ -41,8 +41,8 @@ public class WalkerAgent : Agent
         initialBodyPosition = body.transform.position;
         initialBodyRotation = body.transform.rotation;
 
-        initaialHipsPosition = hips.transform.position;
-        initaialHiosRotation = hips.transform.rotation;
+        initialHipsPosition = hips.transform.position;
+        initialHipsRotation = hips.transform.rotation;
 
         initialCenterPositions = new Vector3[Center.Length];
         initialCenterRotations = new Quaternion[Center.Length];
@@ -56,9 +56,9 @@ public class WalkerAgent : Agent
         initialArmRotations = new Quaternion[Arms.Length];
         for (int i = 0; i < Arms.Length; i++)
         {
-            Debug.Log(Arms[i]);
             initialArmPositions[i] = Arms[i].transform.position;
             initialArmRotations[i] = Arms[i].transform.rotation;
+            // Debug.Log(ini);
         }
 
         initialLegPositions = new Vector3[Legs.Length];
@@ -74,6 +74,34 @@ public class WalkerAgent : Agent
         body.transform.position = new Vector3(0, initialBodyPosition.y, 0);
         ResetPartsToInitialPositions();
     }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        // 体の中心の位置 (3)
+        sensor.AddObservation(body.transform.position);
+
+        // ヘッドのY位置 (1)
+        sensor.AddObservation(head.transform.position.y);
+
+        // 中心部分の回転 (3×3 = 9)
+        foreach (var center in Center)
+        {
+            sensor.AddObservation(center.transform.rotation.eulerAngles);
+        }
+
+        // 腕の回転 (3×6 = 18)
+        foreach (var arm in Arms)
+        {
+            sensor.AddObservation(arm.transform.rotation.eulerAngles);
+        }
+
+        // 脚の回転 (3×6 = 18)
+        foreach (var leg in Legs)
+        {
+            sensor.AddObservation(leg.transform.rotation.eulerAngles);
+        }
+    }
+
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -186,8 +214,8 @@ public class WalkerAgent : Agent
         body.transform.position = initialBodyPosition;
         body.transform.rotation = initialBodyRotation;
 
-        hips.transform.position = initaialHipsPosition;
-        hips.transform.rotation = initaialHiosRotation;
+        hips.transform.position = initialHipsPosition;
+        hips.transform.rotation = initialHipsRotation;
 
         for (int i = 0; i < Center.Length; i++)
         {
@@ -209,25 +237,25 @@ public class WalkerAgent : Agent
 
         if (hipsRb != null)
         {
+            hipsRb.isKinematic = false;
             hipsRb.velocity = Vector3.zero;
             hipsRb.angularVelocity = Vector3.zero;
-            hipsRb.isKinematic = false;
         }
         // 速度と角速度をリセットし、物理演算を再有効化
         if (bodyRb != null)
         {
+            bodyRb.isKinematic = false;
             bodyRb.velocity = Vector3.zero;
             bodyRb.angularVelocity = Vector3.zero;
-            bodyRb.isKinematic = false;
         }
 
         for (int i = 0; i < Center.Length; i++)
         {
             if (centerRbs[i] != null)
             {
+                centerRbs[i].isKinematic = false;
                 centerRbs[i].velocity = Vector3.zero;
                 centerRbs[i].angularVelocity = Vector3.zero;
-                centerRbs[i].isKinematic = false;
             }
         }
 
@@ -235,9 +263,9 @@ public class WalkerAgent : Agent
         {
             if (armRbs[i] != null)
             {
+                armRbs[i].isKinematic = false;
                 armRbs[i].velocity = Vector3.zero;
                 armRbs[i].angularVelocity = Vector3.zero;
-                armRbs[i].isKinematic = false;
             }
         }
 
@@ -245,9 +273,9 @@ public class WalkerAgent : Agent
         {
             if (legRbs[i] != null)
             {
+                legRbs[i].isKinematic = false;
                 legRbs[i].velocity = Vector3.zero;
                 legRbs[i].angularVelocity = Vector3.zero;
-                legRbs[i].isKinematic = false;
             }
         }
     }
