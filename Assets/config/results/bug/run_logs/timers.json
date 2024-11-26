@@ -1,0 +1,47 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1732520744",
+        "python_version": "3.10.14 (main, Oct  1 2024, 16:13:45) [GCC 13.2.0]",
+        "command_line_arguments": "/home/s22024/Unity/waler/bin/mlagents-learn BugAgent.yaml --run-id=bug",
+        "mlagents_version": "1.0.0",
+        "mlagents_envs_version": "1.0.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.5.1+cu118",
+        "numpy_version": "1.23.3",
+        "end_time_seconds": "1732520760"
+    },
+    "total": 16.053990918000636,
+    "count": 1,
+    "self": 0.007119074001820991,
+    "children": {
+        "run_training.setup": {
+            "total": 0.013511691999156028,
+            "count": 1,
+            "self": 0.013511691999156028
+        },
+        "TrainerController.start_learning": {
+            "total": 16.03336015199966,
+            "count": 1,
+            "self": 0.00021911499970883597,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 16.033133072000055,
+                    "count": 1,
+                    "self": 16.033133072000055
+                },
+                "trainer_threads": {
+                    "total": 8.970000635599717e-07,
+                    "count": 1,
+                    "self": 8.970000635599717e-07
+                },
+                "TrainerController._save_models": {
+                    "total": 7.067999831633642e-06,
+                    "count": 1,
+                    "self": 7.067999831633642e-06
+                }
+            }
+        }
+    }
+}
