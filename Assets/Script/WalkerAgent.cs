@@ -112,37 +112,64 @@ public class WalkerAgent : Agent
         // 中央部分の力を設定
         for (int i = 0; i < 3; i++)
         {
-            float torque = continuousActions[i + 12]; // アクションバッファから値を取得
-            ApplyTorqueToJoint(Center_Joint[i], torque, Vector3.up); // 上方向のトルク
+            float horizontalTorque = continuousActions[i]; // アクションバッファから値を取得
+            ApplyTorqueToJoint(Center_Joint[i], horizontalTorque, Vector3.up); // 上方向のトルク
+            float verticalTorque = continuousActions[i + 3];
+            ApplyTorqueToJoint(Center_Joint[i], verticalTorque, Vector3.right);
         }
 
         // アームの動き
         for (int i = 0; i < 6; i++)
         {
-            float horizontalTorque = continuousActions[i]; // 水平トルク
+            float horizontalTorque = continuousActions[i + 6]; // 水平トルク
             ApplyTorqueToJoint(Arml_Joint[i], horizontalTorque, Vector3.right); // 横方向
 
-            float verticalTorque = continuousActions[i + 6]; // 垂直トルク
+            float verticalTorque = continuousActions[i + 12]; // 垂直トルク
             ApplyTorqueToJoint(Arml_Joint[i], verticalTorque, Vector3.forward); // 前後方向
         }
 
         // 脚の動き
         for (int i = 0; i < 6; i++)
         {
-            float horizontalTorque = continuousActions[i]; // 水平トルク
+            float horizontalTorque = continuousActions[i + 18]; // 水平トルク
             ApplyTorqueToJoint(Legs_Joint[i], horizontalTorque, Vector3.right);
 
-            float verticalTorque = continuousActions[i + 6]; // 垂直トルク
+            float verticalTorque = continuousActions[i + 24]; // 垂直トルク
             ApplyTorqueToJoint(Legs_Joint[i], verticalTorque, Vector3.forward);
         }
 
         float headposition = head.transform.position.y;
-        if (headposition >= 2.1f)
+        // float bodyposition = body.transform.position.x;
+
+        // if (headposition <= 1.0f)
+        // {
+        //     AddReward(-1.0f);
+        //     EndEpisode();
+        // }
+        // if (bodyposition <= 20.0f)
+        // {
+        //     AddReward(-0.01f);
+        // }
+        // else if (bodyposition > 20.0f)
+        // {
+        //     AddReward(1.0f);
+        //     EndEpisode();
+        // }
+        // Debug.Log(headposition);
+
+        if (headposition >= 1.3f)
         {
-            AddReward(0.01f);
+            AddReward(0.1f);
+            // AddReward(0.01f * time);
         }
-        else if (headposition <= 2.0f)
+        else if (headposition >= 0.5f && headposition < 1.3f)
         {
+            // Debug.Log("低いよ");
+            AddReward(-0.01f);
+        }
+        else if ( headposition < 0.5f)
+        {
+            // Debug.Log("やりなおし");
             AddReward(-1.0f);
             EndEpisode();
         }
@@ -159,7 +186,7 @@ public class WalkerAgent : Agent
         if (joint == null) return;
 
         // トルクを計算
-        Vector3 torqueVector = axis * torque * 10f; // 10fはスケーリング値で調整可能
+        Vector3 torqueVector = axis * torque * 1000000000000f; // 10fはスケーリング値で調整可能
 
         // 関連するRigidbodyにトルクを加える
         if (joint.connectedBody != null)

@@ -1,0 +1,54 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1732889118",
+        "python_version": "3.10.14 (main, Oct  1 2024, 16:13:45) [GCC 13.2.0]",
+        "command_line_arguments": "/home/s22024/Unity/waler/bin/mlagents-learn config/walker_config.yaml --run-id=stand2 --resume",
+        "mlagents_version": "1.0.0",
+        "mlagents_envs_version": "1.0.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.5.1+cu118",
+        "numpy_version": "1.23.3",
+        "end_time_seconds": "1732889127"
+    },
+    "total": 8.711453400999744,
+    "count": 1,
+    "self": 0.005761931999586523,
+    "children": {
+        "run_training.setup": {
+            "total": 0.011639719999948284,
+            "count": 1,
+            "self": 0.011639719999948284
+        },
+        "TrainerController.start_learning": {
+            "total": 8.69405174900021,
+            "count": 1,
+            "self": 6.535999818879645e-05,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 8.63942337500157,
+                    "count": 1,
+                    "self": 8.63942337500157
+                },
+                "trainer_threads": {
+                    "total": 8.989991329144686e-07,
+                    "count": 1,
+                    "self": 8.989991329144686e-07
+                },
+                "TrainerController._save_models": {
+                    "total": 0.05456211500131758,
+                    "count": 1,
+                    "self": 0.0006963840023672674,
+                    "children": {
+                        "RLTrainer._checkpoint": {
+                            "total": 0.05386573099895031,
+                            "count": 1,
+                            "self": 0.05386573099895031
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
