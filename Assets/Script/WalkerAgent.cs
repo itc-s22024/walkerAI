@@ -139,7 +139,8 @@ public class WalkerAgent : Agent
         }
 
         float headposition = head.transform.position.y;
-        // float bodyposition = body.transform.position.x;
+        float bodyposition = body.transform.position.x;
+        float distance = initialBodyPosition[0] - bodyposition;
 
         // if (headposition <= 1.0f)
         // {
@@ -160,16 +161,15 @@ public class WalkerAgent : Agent
         if (headposition >= 1.3f)
         {
             AddReward(0.1f);
-            // AddReward(0.01f * time);
+            AddReward(0.1f * distance);
         }
         else if (headposition >= 0.5f && headposition < 1.3f)
         {
-            // Debug.Log("低いよ");
             AddReward(-0.01f);
+            AddReward(0.1f * distance);
         }
         else if ( headposition < 0.5f)
         {
-            // Debug.Log("やりなおし");
             AddReward(-1.0f);
             EndEpisode();
         }

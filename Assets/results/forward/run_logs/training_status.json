@@ -2,40 +2,58 @@
     "Walker": {
         "checkpoints": [
             {
-                "steps": 499992,
-                "file_path": "results/forward/Walker/Walker-499992.onnx",
-                "reward": -1.459334933417993,
-                "creation_time": 1732692398.2965982,
+                "steps": 28499750,
+                "file_path": "results/forward/Walker/Walker-28499750.onnx",
+                "reward": 455.1074994504452,
+                "creation_time": 1732930913.075118,
                 "auxillary_file_paths": [
-                    "results/forward/Walker/Walker-499992.pt"
+                    "results/forward/Walker/Walker-28499750.pt"
                 ]
             },
             {
-                "steps": 999992,
-                "file_path": "results/forward/Walker/Walker-999992.onnx",
-                "reward": -1.4397817292424242,
-                "creation_time": 1732694133.781174,
+                "steps": 28999125,
+                "file_path": "results/forward/Walker/Walker-28999125.onnx",
+                "reward": null,
+                "creation_time": 1732931594.973276,
                 "auxillary_file_paths": [
-                    "results/forward/Walker/Walker-999992.pt"
+                    "results/forward/Walker/Walker-28999125.pt"
                 ]
             },
             {
-                "steps": 1074021,
-                "file_path": "results/forward/Walker/Walker-1074021.onnx",
-                "reward": -1.4396573564225141,
-                "creation_time": 1732694350.4093776,
+                "steps": 29499551,
+                "file_path": "results/forward/Walker/Walker-29499551.onnx",
+                "reward": 3.21999990940094,
+                "creation_time": 1732932277.219642,
                 "auxillary_file_paths": [
-                    "results/forward/Walker/Walker-1074021.pt"
+                    "results/forward/Walker/Walker-29499551.pt"
+                ]
+            },
+            {
+                "steps": 29999262,
+                "file_path": "results/forward/Walker/Walker-29999262.onnx",
+                "reward": 553.3928572407791,
+                "creation_time": 1732932961.4363322,
+                "auxillary_file_paths": [
+                    "results/forward/Walker/Walker-29999262.pt"
+                ]
+            },
+            {
+                "steps": 30000262,
+                "file_path": "results/forward/Walker/Walker-30000262.onnx",
+                "reward": 553.3928572407791,
+                "creation_time": 1732932961.5148196,
+                "auxillary_file_paths": [
+                    "results/forward/Walker/Walker-30000262.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 1074021,
+            "steps": 30000262,
             "file_path": "results/forward/Walker.onnx",
-            "reward": -1.4396573564225141,
-            "creation_time": 1732694350.4093776,
+            "reward": 553.3928572407791,
+            "creation_time": 1732932961.5148196,
             "auxillary_file_paths": [
-                "results/forward/Walker/Walker-1074021.pt"
+                "results/forward/Walker/Walker-30000262.pt"
             ]
         }
     },
