@@ -35,6 +35,12 @@ public class WalkerAgent : Agent
     private Vector3[] initialLegPositions;
     private Quaternion[] initialLegRotations;
 
+    private float currentcenterPosition;
+    private float previouscenterPosition;
+
+    private float[] currentlegPosition = new float[6];
+    private float[] previouslegPosition = new float[6];
+
     public override void Initialize()
     {
         // 初期位置と回転を保存
@@ -58,7 +64,6 @@ public class WalkerAgent : Agent
         {
             initialArmPositions[i] = Arms[i].transform.position;
             initialArmRotations[i] = Arms[i].transform.rotation;
-            // Debug.Log(ini);
         }
 
         initialLegPositions = new Vector3[Legs.Length];
@@ -67,7 +72,20 @@ public class WalkerAgent : Agent
         {
             initialLegPositions[i] = Legs[i].transform.position;
             initialLegRotations[i] = Legs[i].transform.rotation;
+
+            previouslegPosition[i] = Legs[i].transform.position.x;
         }
+        
+        for (int i = 0; i < Center.Length; i++)
+        {
+            previouscenterPosition += Center[i].transform.position[0];
+        }
+        // for (int i = 0; i < Legs.Length; i++)
+        // {
+        //     previousPosition += Legs[i].transform.position[0];
+        // }
+        previouscenterPosition += hips.transform.position.x;
+        previouscenterPosition = previouscenterPosition / 4;
     }
 
     public override void OnEpisodeBegin(){
@@ -75,32 +93,55 @@ public class WalkerAgent : Agent
         ResetPartsToInitialPositions();
     }
 
-    public override void CollectObservations(VectorSensor sensor)
+   public override void CollectObservations(VectorSensor sensor)
     {
-        // 体の中心の位置 (3)
-        sensor.AddObservation(body.transform.position);
+        // 位置情報の正規化 (位置範囲 [0, 10])
+        Vector3 normalizedPosition = body.transform.position / 10.0f;
+        sensor.AddObservation(normalizedPosition);
 
-        // ヘッドのY位置 (1)
-        sensor.AddObservation(head.transform.position.y);
+        // 頭の高さの正規化 (最大高さ 2.0f)
+        float normalizedHeight = head.transform.position.y / 2.0f;
+        sensor.AddObservation(normalizedHeight);
 
-        // 中心部分の回転 (3×3 = 9)
+        // 中心部分の回転をクォータニオンで取得
         foreach (var center in Center)
         {
-            sensor.AddObservation(center.transform.rotation.eulerAngles);
+            Quaternion rotation = center.transform.rotation;
+            sensor.AddObservation(rotation.x);
+            sensor.AddObservation(rotation.y);
+            sensor.AddObservation(rotation.z);
+            sensor.AddObservation(rotation.w);
         }
 
-        // 腕の回転 (3×6 = 18)
+        // 腕の回転の正規化
         foreach (var arm in Arms)
         {
-            sensor.AddObservation(arm.transform.rotation.eulerAngles);
+            Quaternion rotation = arm.transform.rotation;
+            sensor.AddObservation(rotation.x);
+            sensor.AddObservation(rotation.y);
+            sensor.AddObservation(rotation.z);
+            sensor.AddObservation(rotation.w);
         }
 
-        // 脚の回転 (3×6 = 18)
+        // 脚の回転の正規化
         foreach (var leg in Legs)
         {
-            sensor.AddObservation(leg.transform.rotation.eulerAngles);
+            Quaternion rotation = leg.transform.rotation;
+            sensor.AddObservation(rotation.x);
+            sensor.AddObservation(rotation.y);
+            sensor.AddObservation(rotation.z);
+            sensor.AddObservation(rotation.w);
         }
+
+        sensor.AddObservation(hips.GetComponent<Rigidbody>().velocity.x); // グローバルな前進速度
+
+        foreach (var joint in Legs_Joint)
+        {
+            sensor.AddObservation(joint.GetComponent<Rigidbody>().angularVelocity); // 各脚の関節速度
+        }
+
     }
+ 
 
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -139,40 +180,61 @@ public class WalkerAgent : Agent
         }
 
         float headposition = head.transform.position.y;
-        float bodyposition = body.transform.position.x;
-        float distance = initialBodyPosition[0] - bodyposition;
-
-        // if (headposition <= 1.0f)
-        // {
-        //     AddReward(-1.0f);
-        //     EndEpisode();
-        // }
-        // if (bodyposition <= 20.0f)
-        // {
-        //     AddReward(-0.01f);
-        // }
-        // else if (bodyposition > 20.0f)
-        // {
-        //     AddReward(1.0f);
-        //     EndEpisode();
-        // }
-        // Debug.Log(headposition);
-
-        if (headposition >= 1.3f)
+        for (int i = 0; i < Center.Length; i++)
         {
-            AddReward(0.1f);
-            AddReward(0.1f * distance);
+            currentcenterPosition += Center[i].transform.position[0];
         }
-        else if (headposition >= 0.5f && headposition < 1.3f)
+        // for (int i = 0; i < Legs.Length; i++)
+        // {
+        //     currentPosition += Legs[i].transform.position[0];
+        // }
+
+        currentcenterPosition += hips.transform.position.x;
+        currentcenterPosition = currentcenterPosition / 4;
+        float deltaX = currentcenterPosition - previouscenterPosition;
+        previouscenterPosition = currentcenterPosition;
+
+        // for (int i = 0; i < Legs.Length; i++)
+        // {
+        //     currentlegPosition[i] = Legs[i].transform.position.x;
+        // }
+
+        AddReward(deltaX * 20f);
+
+        if (head.transform.position.y > 1.0f) // 頭の高さが一定以上なら報酬
         {
-            AddReward(-0.01f);
-            AddReward(0.1f * distance);
+            AddReward(0.5f);
         }
-        else if ( headposition < 0.5f)
+        else if (head.transform.position.y < 1.0f && head.transform.position.y > 0.5f)
         {
-            AddReward(-1.0f);
+            AddReward(-0.1f);
+        }
+        else if (head.transform.position.y < 0.5f) // 転倒とみなす条件
+        {
+            // AddReward(-1.0f); // 大きなペナルティ
             EndEpisode();
         }
+
+        if (hips.transform.position.y < initialHipsPosition.y - 0.2)
+        {
+            EndEpisode();
+        }
+
+       for (int i = 0; i < Legs.Length; i++)
+        {
+            float legDeltaX = currentlegPosition[i] - previouslegPosition[i];
+            previouslegPosition[i] = currentlegPosition[i];
+
+            if (legDeltaX > 0) // 前進している場合のみ報酬
+            {
+                AddReward(legDeltaX * 0.1f);
+            }
+            else // 後退した場合にはペナルティ（必要に応じて）
+            {
+                AddReward(legDeltaX * 0.05f);
+            }
+        }
+ 
     }
 
     /// <summary>
@@ -186,7 +248,7 @@ public class WalkerAgent : Agent
         if (joint == null) return;
 
         // トルクを計算
-        Vector3 torqueVector = axis * torque * 1000000000000f; // 10fはスケーリング値で調整可能
+        Vector3 torqueVector = axis * torque * 200f; // 10fはスケーリング値で調整可能
 
         // 関連するRigidbodyにトルクを加える
         if (joint.connectedBody != null)
