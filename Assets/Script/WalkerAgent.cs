@@ -194,12 +194,11 @@ public class WalkerAgent : Agent
         float deltaX = currentcenterPosition - previouscenterPosition;
         previouscenterPosition = currentcenterPosition;
 
-        // for (int i = 0; i < Legs.Length; i++)
-        // {
-        //     currentlegPosition[i] = Legs[i].transform.position.x;
-        // }
-
         AddReward(deltaX * 20f);
+        if (deltaX < 0.05f)
+        {
+            AddReward(-0.1f);
+        }
 
         if (head.transform.position.y > 1.0f) // 頭の高さが一定以上なら報酬
         {
@@ -248,7 +247,7 @@ public class WalkerAgent : Agent
         if (joint == null) return;
 
         // トルクを計算
-        Vector3 torqueVector = axis * torque * 200f; // 10fはスケーリング値で調整可能
+        Vector3 torqueVector = axis * torque * 150f; // 10fはスケーリング値で調整可能
 
         // 関連するRigidbodyにトルクを加える
         if (joint.connectedBody != null)
